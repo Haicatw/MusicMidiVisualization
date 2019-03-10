@@ -1,0 +1,23 @@
+{
+  "name": "musicmidivisualization",
+  "version": "1.0.0",
+  "description": "Music Visalization Tool",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Haicatw/MusicMidiVisualization.git"
+  },
+  "author": "Kirby",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Haicatw/MusicMidiVisualization/issues"
+  },
+  "homepage": "https://github.com/Haicatw/MusicMidiVisualization#readme",
+  "dependencies": {
+    "d3v4": "^4.2.2",
+    "midi-player-js": "^2.0.5"
+  }
+}
