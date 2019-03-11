@@ -1,0 +1,107 @@
+body {
+    font-family: sans-serif;
+  }
+  
+  
+  .point {
+    mix-blend-mode: multiply;
+  }
+  
+  .frame {
+      fill: none;
+      stroke: #000;
+    }
+    
+    .axis text {
+      font: 10px sans-serif;
+    }
+    
+  .axis line {
+    fill: none;
+    stroke: #ebebeb;
+  }
+    
+  .axis circle {
+    fill: none;
+    stroke: #aaa;
+    
+    /*stroke-dasharray: 4;*/
+  }
+    
+    .axis:last-of-type circle {
+      stroke: #333;
+      /*stroke-dasharray: none;*/
+    }
+  
+  
+    .line {
+      fill: none;
+      stroke: orange;
+      stroke-width: 3px;
+    }
+
+    #FileDrop{
+			position: relative;
+			width: 100%;
+			height: 100px;
+			border: 2px dashed black;
+			color: black;
+			margin: 20px auto;
+		}
+
+		#FileDrop.Hover{
+			background-color: black;
+			color: white;
+		}
+
+		#FileDrop input {
+			position: absolute;
+			width: 100%;
+			height: 100%;
+			opacity: 0;
+			left: 0px;
+			top: 0px;
+		}
+
+		#FileDrop #Text {
+			position: absolute;
+			width: 100%;
+			height: 20px;
+			line-height: 20px;
+			left: 0px;
+			top: 50%;
+			transform: translate(0, -50%);
+			text-align: center;
+		}
+
+		textarea {
+			font-family: monospace;
+			height: 300px;
+			width: 100%;
+			display: inline-block;
+			position: relative;
+			float: left;
+		}
+
+		#Results {
+			position: relative;
+			width: 100%;
+			margin: 10px auto;
+		}
+
+		#Description {
+			position: relative;
+			width: 100%;
+			text-align: center;
+			height: 40px;
+			font-size: 16px;
+			margin: 10px auto;
+			font-family: sans-serif;
+		}
+
+		tone-play-toggle {
+			margin-top: 10px;
+		}
+		.node {
+			opacity: 0.2;
+		}
