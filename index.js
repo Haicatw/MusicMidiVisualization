@@ -1,6 +1,6 @@
 const d3 = require("d3v4");
-const Midi = require("@tonejs/midi");
-const Tonejs = require("tone");
+//const Midi = require("@tonejs/midi");
+//const Tonejs = require("tone");
 
 // http://stackoverflow.com/questions/33695073/javascript-polar-scatter-plot-using-d3-js/33710021#33710021
 
@@ -20,6 +20,11 @@ var reMap = function(oldValue) {
   var tracksAngularLinearScales = [];
   var trackPolarRadiusScales = [];
   var radiusScale;
+  var audioFileName = "vivaldi";
+  var numTracks;
+  var audioAngularScale;
+  var globalCurrentTime = 0;
+  var globalDuration = 0;
   
   
   // https://en.wikipedia.org/wiki/Polar_coordinate_system
@@ -59,7 +64,7 @@ var reMap = function(oldValue) {
   d3.csv("./data/track_info_ver5.csv", function(data){
     //console.log(data);
     
-    var numTracks = d3.max(data, function(d) { return +d["Track"]; })
+    numTracks = d3.max(data, function(d) { return +d["Track"]; })
     var trackIndex = 0;
     while (trackIndex < numTracks){
         tracksAngularLinearScales[trackIndex] = d3.scaleLinear().domain([d3.min(data, function(d) { return +d["Start"]; }), d3.max(data, function(d) { return +d["Start"]; })]).range([0, 359]);
@@ -71,7 +76,7 @@ var reMap = function(oldValue) {
 
     
     while(trackIndex < numTracks){
-        trackPolarRadiusScales[trackIndex] = d3.scaleLinear().domain([d3.min(data, function(d) { return +d["Start"]; }) + 12, d3.max(data, function(d) { return +d["Pitch"]; })]).range([0, 1]);
+        trackPolarRadiusScales[trackIndex] = d3.scaleLinear().domain([d3.min(data, function(d) { return +d["Pitch"]; }) - 20, d3.max(data, function(d) { return +d["Pitch"]; })]).range([0, 1]);
 
         trackIndex += 1;
     }
@@ -159,35 +164,107 @@ var reMap = function(oldValue) {
         
         //return tooltip.style("visibility", "visible");
       });
-    initMIDI();
+
+
+    var lineSelector = d3.select(".notes").append('g').attr("id", "playerSliderLine");
+    //initMIDI();
+    initPlayerSliderline();
+    initAudioComponent();
+    //audioAngularScale = d3.scaleLinear().domain([0, globalDuration]).range([0, 359]);
+    setInterval(updateView);
+    playAudio();
+    /*
+    var mixer = [];
+    var audioPlayers = [];
+    var i = 0;
+    while (i < numTracks) {
+      mixer.push(new Tonejs.Channel().toMaster());
+      var tempFileName = "./data/" + audioFileName + "_" + i + ".wav";
+      audioPlayers.push(new Tonejs.Player({
+        url: tempFileName,
+        loop: true
+      }).sync().chain(mixer[i]));
+    }
+
+    audioPlayers.forEach(track => {
+      track.start(0);
+    })
+*/
   });
+
+  function initAudioComponent() {
+    var audios = d3.select(".audioComponents");
+    var i = 0;
+    while (i < numTracks) {
+      var tempFileName = "./data/" + audioFileName + "_" + i + ".wav";
+      audios.append("audio")
+        .attr("id", "track" + i)
+        .attr("src", tempFileName)
+        .attr("type", "audio/wav")
+        .attr("preload", "metadata")
+        .attr("autobuffer", "");
+        //.attr("controls", "")
+      i++;
+    }
+    //sleep(2000);
+    audio = document.getElementById('track0');
+    audio.addEventListener('loadedmetadata', function() {
+      console.log(audio.src + ", for: " + audio.duration + "seconds.");
+      globalDuration = audio.duration;
+      console.log(globalDuration);
+      //audio.play(); 
+    });
+
+    
+  }
   
+  function initPlayerSliderline() {
+    var lineSelector = d3.select("#playerSliderLine");
+    lineSelector
+      .append("g")
+      .attr("transform", function(d) {
+        return "rotate(" + -0 + ")";
+      });
+
+    lineSelector.append("line")
+      .attr("x2", radius)
+      .style("stroke", "black");
+  }
+
+  function updatePlayerSliderline(angle){
+    var lineSelector = d3.select("#playerSliderLine");
+    lineSelector
+      .attr("transform", function(d) {
+        return "rotate(" + angle + ")";
+      });
+  }
+
+  function updateView() {
+    var angle = getCurrentPlaybackTime() / globalDuration * 359 - 90;//audioAngularScale(getCurrentPlaybackTime());
+    console.log(angle);
+    updatePlayerSliderline(angle);
+  }
+
+  function getCurrentPlaybackTime() {
+    //console.log(document.getElementById('track0').currentTime);
+    return document.getElementById('track0').currentTime;
+  }
+
+  function playAudio(){
+    //starts from 0
+    var audio0 = document.getElementById('track0');
+    var audio1 = document.getElementById('track1');
+    var audio2 = document.getElementById('track2');
+    audio0.play();
+    audio1.play();
+    audio2.play();
+  }
+
+  function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+  }
   
-  /*
-      var gr = svg.append("g")
-        .attr("class", "r axis")
-        .selectAll("g")
-        .data(r.ticks(5).slice(1))
-        .enter().append("g");
-  
-      gr.append("circle")
-        .attr("r", r);
-        */
-  /*
-      var ga = svg.append("g")
-        .attr("class", "a axis")
-        .selectAll("g")
-        .data(d3.range(0, 360, 30)) // line density
-        .enter().append("g")
-        .attr("transform", function(d) {
-          return "rotate(" + -d + ")";
-        });
-  
-      ga.append("line")
-        .attr("x2", radius);
-      
-      
-  */
   
   //console.log(d3.select("circle"));
   //d3.select(".notes").append("circle").attr("r", 1).style("fill", "black");
@@ -235,7 +312,7 @@ var reMap = function(oldValue) {
         }); 
   
   */
-
+/*
 function initMIDI(){
 
  if (!(window.File && window.FileReader && window.FileList && window.Blob)) {
@@ -247,7 +324,7 @@ function initMIDI(){
 
 function handleFiles(e) {
     const files = e.target.files;
-    var file = files[0];//this.
+    var file = this.files[0];//this.
     parseFile(file);
 };
 
@@ -262,7 +339,7 @@ function parseFile(file){
         const midi = new Midi(e.target.result);
         //d3.select("#ResultsText").attr("value", JSON.stringify(midi, undefined, 2));
         //d3.select(".controlButton")
-        //console.info(JSON.stringify(midi, undefined, 2));
+        console.info(JSON.stringify(midi, undefined, 2));
         currentMidi = midi
     }
     reader.readAsArrayBuffer(file);
@@ -299,3 +376,5 @@ d3.select(".controlButton").on("play", (e) => {
     }
 })
 }
+<input type="file" id="uploader" name="files[]" multiple />
+*/
